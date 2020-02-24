@@ -56,7 +56,7 @@ class CaptchaDataset(Dataset):
 
         self._samples = samples
         self._num_labels = num_labels
-        self._num_classes = ord('z') - ord('a')
+        self._num_classes = ord('z') - ord('a') + 1
 
         logger.info('finished in {:.3} sec'.format(time.time() - tic))
         logger.info('number of samples: {}'.format(len(self._samples)))

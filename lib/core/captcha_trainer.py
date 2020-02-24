@@ -180,7 +180,7 @@ class CaptchaTrainer:
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
                 outputs = net(inputs)
                 outputs = torch.softmax(outputs, dim=1)
-                preds = torch.argmax(outputs)
+                preds = torch.argmax(outputs, dim=1)
                 metric.update(labels, preds)
 
         if is_training:
@@ -255,13 +255,22 @@ class CaptchaTrainer:
 
         if ignore is not None:
             labels[ignore] = -1
-        masks = labels_to_imgs(imgs.shape, labels).to(imgs.device)
+        labels = labels.cpu().numpy()
+        resolve_texts = [self.decode(l) for l in labels]
+        masks = labels_to_imgs(imgs.shape, resolve_texts).to(imgs.device)
         imgs = torch.cat([imgs, masks], dim=3)
 
         imgs = np.transpose(vutils.make_grid(imgs, nrow=nrow,
                                              padding=2, normalize=False).cpu().numpy(), (1, 2, 0))
         imgs = imgs[:, :, ::-1].astype(np.uint8)
         return imgs
+
+    def decode(self, labels):
+        resolve_text = ''
+        for l in labels:
+            symbol = chr(ord('a') + l) if l >= 0 else ' '
+            resolve_text += symbol
+        return resolve_text
 
     def run_batches(self, large_batch):
 
@@ -305,18 +314,18 @@ class CaptchaTrainer:
             self.eval_batch = self.prepare_batch_from_idx(idx, self.val_dataset)
 
             imgs = self.prepare_vis_pairs(self.eval_batch['img'],
-                                          self.eval_batch['label'], self.val_dataset.pallete)
+                                          self.eval_batch['label'])
             path_to_save = self.cfg.vis_path / f'progress_val_gt.jpg'
             cv2.imwrite(str(path_to_save), imgs)
 
         if self.train_batch is None:
             n_display = min(len(self.train_dataset), self.n_display)
             idx = np.random.choice(len(self.train_dataset), n_display, replace=False)
-            self.source_batch = self.prepare_batch_from_idx(idx, self.train_dataset)
+            self.train_batch = self.prepare_batch_from_idx(idx, self.train_dataset)
 
-            imgs = self.prepare_vis_pairs(self.source_batch['img'],
-                                          self.source_batch['label'])
-            path_to_save = self.cfg.vis_path / f'progress_source_gt.jpg'
+            imgs = self.prepare_vis_pairs(self.train_batch['img'],
+                                          self.train_batch['label'])
+            path_to_save = self.cfg.vis_path / f'progress_train_gt.jpg'
             cv2.imwrite(str(path_to_save), imgs)
 
         if self.eval_batch is not None:
@@ -327,9 +336,9 @@ class CaptchaTrainer:
             cv2.imwrite(str(path_to_save), imgs)
 
         pred_labels = self.run_batches(self.train_batch['img'])
-        ignore = self.source_batch['label'] == -1
-        imgs = self.prepare_vis_pairs(self.source_batch['img'], pred_labels, ignore=ignore)
-        path_to_save = self.cfg.vis_path / f'progress_source_kimg_{n_periods:06d}.jpg'
+        ignore = self.train_batch['label'] == -1
+        imgs = self.prepare_vis_pairs(self.train_batch['img'], pred_labels, ignore=ignore)
+        path_to_save = self.cfg.vis_path / f'progress_train_kimg_{n_periods:06d}.jpg'
         cv2.imwrite(str(path_to_save), imgs)
 
     def prepare_batch_from_idx(self, idx, dataset):

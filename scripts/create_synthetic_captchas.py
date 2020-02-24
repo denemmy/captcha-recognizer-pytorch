@@ -13,7 +13,7 @@ PATH_TO_FONT = '/Users/denemmy/Downloads/msuighub.ttf'
 
 def get_random_symbol():
     first = ord('a')
-    count = ord('z') - ord('a')
+    count = ord('z') - ord('a') + 1
     random_symbol = first + np.random.randint(0, count)
     return chr(random_symbol)
 
@@ -136,7 +136,7 @@ def generate_captcha(width=200, height=70, color_fill=(255, 255, 255), color_fon
 
 
 def prepare_synthetic_dataset():
-    output_dir = '/Users/denemmy/projects/data/captcha/'
+    output_dir = '/media/denemmy/hdd/data/captcha_v2'
     subdirname = 'generated'
     output_subdir = join(output_dir, subdirname)
     if not isdir(output_dir):

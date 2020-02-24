@@ -30,7 +30,7 @@ def train(cfg):
     img_width = 200
     img_height = 70
 
-    normalization = ImageNormalization(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    normalization = ImageNormalization(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
     interpolation = cv2.INTER_LINEAR
 
     train_dataset = CaptchaDataset(
@@ -79,17 +79,22 @@ def train(cfg):
 
     total_kimgs = 10000
 
+    # optim_params = edict()
+    # optim_params.opt = optim.SGD
+    # optim_params.params = edict()
+    #
+    # optim_params.params.lr = 0.01
+    # optim_params.params.momentum = 0.9
+    # optim_params.params.weight_decay = 1e-4
+
+    # schedulers = [ComposeScheduler([(CosineSegment(period=total_kimgs, min_scale=0.0), total_kimgs)],
+    #                                param_name='lr')]
+    # optim_params.schedulers = schedulers
+
     optim_params = edict()
-    optim_params.opt = optim.SGD
+    optim_params.opt = optim.Adam
     optim_params.params = edict()
-
-    optim_params.params.lr = 0.001
-    optim_params.params.momentum = 0.9
-    optim_params.params.weight_decay = 1e-4
-
-    schedulers = [ComposeScheduler([(CosineSegment(period=total_kimgs, min_scale=0.0), total_kimgs)],
-                                   param_name='lr')]
-    optim_params.schedulers = schedulers
+    optim_params.params.lr = 1e-3
 
     trainer = CaptchaTrainer(
         cfg, net=net,
@@ -99,10 +104,10 @@ def train(cfg):
         batch_size=batch_size,
         total_kimgs=total_kimgs,
         log_period_kimgs={0:1,20:1,50:5,500:10},
-        log_images_period_kimgs=-1,
-        last_checkpoint_period_kimgs=100,
+        log_images_period_kimgs={0:20,100:100,500:500},
+        last_checkpoint_period_kimgs={0:100,500:500},
         checkpoint_period_kimgs=5000,
-        eval_period={0:5,20:10,50:50,500:100},
+        eval_period={0:100,500:500},
         n_display=16,
     )
     trainer.train()

@@ -1,5 +1,4 @@
-EXPS_PATH: "/media/denemmy/hdd/tensorboard/vsu"
+EXPS_PATH: "/media/denemmy/hdd/tensorboard/"
 SUBCONFIGS:
   baseline:
     DATASET_PATH: "/home/denemmy/data/common_db/stream/"
-    VAL_DATASET_PATH: "/home/denemmy/data/common_db/stream/"

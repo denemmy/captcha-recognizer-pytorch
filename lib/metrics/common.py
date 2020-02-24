@@ -77,4 +77,4 @@ def batch_accuracy(predicted, target):
     labeled = torch.sum(per_row_target > 0).item()
     correct = torch.sum((per_row_pred == per_row_target) * (per_row_target > 0)).item()
 
-    return labeled, correct
+    return correct, labeled
