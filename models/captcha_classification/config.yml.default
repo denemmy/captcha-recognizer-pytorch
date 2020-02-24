@@ -1,4 +1,4 @@
-EXPS_PATH: "logs"
+EXPS_PATH: "/content/logs"
 SUBCONFIGS:
   baseline:
-    DATASET_PATH: "captcha"
+    DATASET_PATH: "/content/captcha"
