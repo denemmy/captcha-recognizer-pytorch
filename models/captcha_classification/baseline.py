@@ -43,18 +43,18 @@ def train(cfg):
             #     OpticalDistortion(distort_limit=0.3, shift_limit=0.2, p=1., interpolation=interpolation),
             #     ElasticTransform(p=1., interpolation=interpolation),
             # ], p=0.25),
-            RandomBrightnessContrast(brightness_limit=(-0.25, 0.25), contrast_limit=(-0.3, 0.5), p=0.2),
-            RGBShift(r_shift_limit=20, g_shift_limit=20, b_shift_limit=20, p=0.2),
-            HueSaturationValue(hue_shift_limit=50, sat_shift_limit=70, val_shift_limit=50, p=0.2),
+            RandomBrightnessContrast(brightness_limit=(-0.1, 0.1), contrast_limit=(-0.1, 0.1), p=0.1),
+            RGBShift(r_shift_limit=5, g_shift_limit=5, b_shift_limit=5, p=0.1),
+            HueSaturationValue(hue_shift_limit=10, sat_shift_limit=20, val_shift_limit=20, p=0.1),
             OneOf([
                 ChannelShuffle(p=1.),
                 ToGray(p=1.),
-            ], p=0.25),
-            Blur(blur_limit=5, p=0.5),
+            ], p=0.1),
+            Blur(blur_limit=3, p=0.5),
             OneOf([
                 GaussNoise(var_limit=(20, 50), p=1),
                 IAAAdditiveGaussianNoise(scale=(7.5, 7.5), p=1)
-            ], p=0.5),
+            ], p=0.1),
         ],
         interpolation=interpolation
     )
@@ -77,7 +77,7 @@ def train(cfg):
     batch_size_cpu = 4
     batch_size = batch_size_one_gpu * len(cfg.gpu_ids) if len(cfg.gpu_ids) > 0 else batch_size_cpu
 
-    total_kimgs = 10000
+    total_kimgs = 50000
 
     # optim_params = edict()
     # optim_params.opt = optim.SGD
@@ -103,12 +103,12 @@ def train(cfg):
         image_normalization=normalization,
         batch_size=batch_size,
         total_kimgs=total_kimgs,
-        log_period_kimgs={0:1,20:1,50:5,500:10},
-        log_images_period_kimgs={0:20,100:100,500:500},
-        last_checkpoint_period_kimgs={0:100,500:500},
-        checkpoint_period_kimgs=5000,
-        eval_period={0:100,500:500},
-        n_display=16,
+        log_period_kimgs={0:1,20:1,50:5,500:10,1000:50,10000:100},
+        log_images_period_kimgs={0:20,100:100,500:500,10000:1000},
+        last_checkpoint_period_kimgs={0:100,500:500,10000:1000},
+        checkpoint_period_kimgs=50000,
+        eval_period={0:100,500:500,10000:1000},
+        n_display=8,
     )
     trainer.train()
 

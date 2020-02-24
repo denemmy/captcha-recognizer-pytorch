@@ -20,16 +20,16 @@ class Classifier(nn.Module):
             nn.Conv2d(ndf * 4, ndf * 8, 4, 2, 1, bias=False),
             nn.BatchNorm2d(ndf * 8),
             nn.LeakyReLU(0.2, inplace=True),
-            nn.Conv2d(ndf * 8, ndf * 8, 4, 2, 1, bias=False),
+            nn.Conv2d(ndf * 8, ndf * 16, 4, 2, 1, bias=False),
             nn.BatchNorm2d(ndf * 8),
             nn.LeakyReLU(0.2, inplace=True),
-            nn.Conv2d(8 * ndf, out_channels=8 * ndf, kernel_size=3,
+            nn.Conv2d(16 * ndf, out_channels=16 * ndf, kernel_size=3,
                       stride=1, padding=1, bias=False),
-            nn.BatchNorm2d(8 * ndf),
+            nn.BatchNorm2d(16 * ndf),
             nn.LeakyReLU(0.2, inplace=True),
             nn.AdaptiveAvgPool2d((1, 1)),
             Flatten(),
-            nn.Linear(8 * ndf, self.num_classes * self.num_labels, bias=False)
+            nn.Linear(16 * ndf, self.num_classes * self.num_labels, bias=False)
         ]
         self.main = nn.Sequential(*[x for x in main_layers if x is not None])
 
