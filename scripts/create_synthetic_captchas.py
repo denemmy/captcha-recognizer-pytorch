@@ -8,7 +8,7 @@ from os import mkdir
 from os.path import join, isdir, splitext
 import tqdm
 
-PATH_TO_FONT = '/Users/denemmy/Downloads/msuighub.ttf'
+PATH_TO_FONT = '/media/denemmy/hdd/data/fonts/msuighub.ttf'
 
 
 def get_random_symbol():

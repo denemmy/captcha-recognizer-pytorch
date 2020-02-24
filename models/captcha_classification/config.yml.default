@@ -1,4 +1,4 @@
-EXPS_PATH: "/media/denemmy/hdd/tensorboard/"
+EXPS_PATH: "logs"
 SUBCONFIGS:
   baseline:
-    DATASET_PATH: "/home/denemmy/data/common_db/stream/"
+    DATASET_PATH: "captcha"
