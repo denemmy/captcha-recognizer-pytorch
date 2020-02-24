@@ -21,7 +21,7 @@ class Classifier(nn.Module):
             nn.BatchNorm2d(ndf * 8),
             nn.LeakyReLU(0.2, inplace=True),
             nn.Conv2d(ndf * 8, ndf * 16, 4, 2, 1, bias=False),
-            nn.BatchNorm2d(ndf * 8),
+            nn.BatchNorm2d(ndf * 16),
             nn.LeakyReLU(0.2, inplace=True),
             nn.Conv2d(16 * ndf, out_channels=16 * ndf, kernel_size=3,
                       stride=1, padding=1, bias=False),

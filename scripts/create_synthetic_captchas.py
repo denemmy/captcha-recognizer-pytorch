@@ -136,14 +136,14 @@ def generate_captcha(width=200, height=70, color_fill=(255, 255, 255), color_fon
 
 
 def prepare_synthetic_dataset():
-    output_dir = '/media/denemmy/hdd/data/captcha_v2'
+    output_dir = '/media/denemmy/hdd/data/captcha_v3'
     subdirname = 'generated'
     output_subdir = join(output_dir, subdirname)
     if not isdir(output_dir):
         mkdir(output_dir)
     if not isdir(output_subdir):
         mkdir(output_subdir)
-    number_of_captchas = 30000
+    number_of_captchas = 300000
     data = {}
     with tqdm.tqdm(total=number_of_captchas) as pb:
         for i in range(number_of_captchas):
