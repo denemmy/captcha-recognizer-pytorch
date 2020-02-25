@@ -1,6 +1,6 @@
 import torch
 import sys
-sys.path.insert('..')
+sys.path.append('..')
 
 
 def convert():
