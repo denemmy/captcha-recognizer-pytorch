@@ -39,18 +39,21 @@ def train(cfg):
         normalization=normalization,
         aug=[
             Resize(height=img_height, width=img_width, always_apply=True, interpolation=interpolation),
-            # OneOf([
-            #     OpticalDistortion(distort_limit=0.3, shift_limit=0.2, p=1., interpolation=interpolation),
-            #     ElasticTransform(p=1., interpolation=interpolation),
-            # ], p=0.25),
+            Rotate(limit=10, interpolation=interpolation, border_mode=cv2.BORDER_CONSTANT, value=0, p=0.25),
+            OneOf([
+                OpticalDistortion(p=1., distort_limit=0.3, shift_limit=0.2, interpolation=interpolation,
+                                  border_mode=cv2.BORDER_CONSTANT, value=0),
+                ElasticTransform(p=1., alpha=30, sigma=4, alpha_affine=4, interpolation=interpolation,
+                                 border_mode=cv2.BORDER_CONSTANT, value=1),
+            ], p=0.4),
             RandomBrightnessContrast(brightness_limit=(-0.1, 0.1), contrast_limit=(-0.1, 0.1), p=0.1),
             RGBShift(r_shift_limit=5, g_shift_limit=5, b_shift_limit=5, p=0.1),
             HueSaturationValue(hue_shift_limit=10, sat_shift_limit=20, val_shift_limit=20, p=0.1),
             OneOf([
                 ChannelShuffle(p=1.),
                 ToGray(p=1.),
-            ], p=0.1),
-            Blur(blur_limit=3, p=0.5),
+            ], p=0.05),
+            Blur(blur_limit=3, p=0.05),
             OneOf([
                 GaussNoise(var_limit=(20, 50), p=1),
                 IAAAdditiveGaussianNoise(scale=(7.5, 7.5), p=1)
@@ -87,14 +90,18 @@ def train(cfg):
     # optim_params.params.momentum = 0.9
     # optim_params.params.weight_decay = 1e-4
 
-    # schedulers = [ComposeScheduler([(CosineSegment(period=total_kimgs, min_scale=0.0), total_kimgs)],
-    #                                param_name='lr')]
-    # optim_params.schedulers = schedulers
+    ct_period = int(0.5 * total_kimgs)
+    cos_period = total_kimgs - ct_period
+
+    schedulers = [ComposeScheduler([(ConstantSegment(), ct_period),
+                                    (CosineSegment(period=cos_period, min_scale=0.0), cos_period)],
+                                   param_name='lr')]
 
     optim_params = edict()
     optim_params.opt = optim.Adam
     optim_params.params = edict()
     optim_params.params.lr = 1e-3
+    optim_params.schedulers = schedulers
 
     trainer = CaptchaTrainer(
         cfg, net=net,

@@ -104,7 +104,8 @@ class CaptchaTrainer:
             scheduler.register_optimizer(self.optimizer)
             self.event_loop.register_metric_event(scheduler.step, func_inputs=('f_periods',),
                                                   metric_name=f'net_{scheduler.param_name}', console_format='{}',
-                                                  period=0, console_period=-1, tb_period=2, tb_global_step='n_periods',
+                                                  period=0, console_period=self.log_period_kimgs,
+                                                  tb_period=2, tb_global_step='n_periods',
                                                   tb_name=f'TrainStates/net_{scheduler.param_name}')
 
         self.event_loop.register_event(self.images_log, period=self.log_images_period_kimgs, func_inputs=('n_periods',))
